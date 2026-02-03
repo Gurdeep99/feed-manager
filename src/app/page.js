@@ -30,12 +30,6 @@ export default function Home() {
           >
             Login
           </Link>
-          <Link
-            href="/register"
-            className="px-8 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold text-lg transition-colors"
-          >
-            Register
-          </Link>
         </div>
 
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 text-left">

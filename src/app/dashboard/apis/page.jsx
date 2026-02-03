@@ -142,9 +142,19 @@ export default function ApisPage() {
                     <p className="text-white font-mono text-lg">
                       /api/{api.property}/{api.route}
                     </p>
-                    <p className="text-gray-500 text-sm mt-1">
-                      {api.hitCount || 0} hits
-                    </p>
+                    <div className="flex items-center gap-4 mt-1">
+                      <span className="text-gray-500 text-sm">
+                        {api.hitCount || 0} hits
+                      </span>
+                      <span className="text-gray-600 text-xs">
+                        Updated: {new Date(api.updatedAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
                   </div>
                   <div className="flex gap-2">
                     <button
