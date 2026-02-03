@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { apiFetch } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 
 export default function ApisPage() {
+  const { user } = useAuth();
   const [apis, setApis] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
@@ -138,6 +140,11 @@ export default function ApisPage() {
                           x{api.rotation}
                         </span>
                       )}
+                      {api.label && (
+                        <span className="text-xs px-2 py-0.5 rounded bg-cyan-600 text-white">
+                          {api.label}
+                        </span>
+                      )}
                     </div>
                     <p className="text-white font-mono text-lg">
                       /api/{api.property}/{api.route}
@@ -145,6 +152,9 @@ export default function ApisPage() {
                     <div className="flex items-center gap-4 mt-1">
                       <span className="text-gray-500 text-sm">
                         {api.hitCount || 0} hits
+                      </span>
+                      <span className="text-gray-500 text-sm">
+                        By: {api.userId?.name || "Unknown"}
                       </span>
                       <span className="text-gray-600 text-xs">
                         Updated: {new Date(api.updatedAt).toLocaleDateString("en-US", {
@@ -163,18 +173,22 @@ export default function ApisPage() {
                     >
                       {copiedId === api._id ? "Copied!" : "cURL"}
                     </button>
-                    <Link
-                      href={`/dashboard/apis/${api._id}/edit`}
-                      className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded"
-                    >
-                      Edit
-                    </Link>
-                    <button
-                      onClick={() => deleteApi(api._id)}
-                      className="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
-                    >
-                      Delete
-                    </button>
+                    {api.userId?._id === user?.id && (
+                      <>
+                        <Link
+                          href={`/dashboard/apis/${api._id}/edit`}
+                          className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded"
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          onClick={() => deleteApi(api._id)}
+                          className="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
 

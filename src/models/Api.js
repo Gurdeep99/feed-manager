@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const ApiSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  label: { type: String, default: "" },
   property: { type: String, required: true },
   route: { type: String, required: true },
   apiType: { type: String, enum: ["STATIC", "DYNAMIC"], required: true },

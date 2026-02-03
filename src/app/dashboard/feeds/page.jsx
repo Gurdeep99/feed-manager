@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/DashboardLayout";
 import { apiFetch } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 export default function FeedsPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [feeds, setFeeds] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -75,7 +77,14 @@ export default function FeedsPage() {
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <h3 className="text-white font-medium">{feed.name}</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-white font-medium">{feed.name}</h3>
+                      {feed.label && (
+                        <span className="text-xs px-2 py-0.5 rounded bg-cyan-600 text-white">
+                          {feed.label}
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-xs px-2 py-0.5 rounded bg-purple-600 text-white">
                         FEED
@@ -84,11 +93,16 @@ export default function FeedsPage() {
                         /api/feed/{feed.property}/{feed.route}
                       </span>
                     </div>
-                    {feed.providerId && (
-                      <div className="text-gray-500 text-xs mt-1">
-                        Provider: {feed.providerId.name || "Unknown"}
-                      </div>
-                    )}
+                    <div className="flex items-center gap-4 mt-1">
+                      {feed.providerId && (
+                        <span className="text-gray-500 text-xs">
+                          Provider: {feed.providerId.name || "Unknown"}
+                        </span>
+                      )}
+                      <span className="text-gray-500 text-xs">
+                        By: {feed.userId?.name || "Unknown"}
+                      </span>
+                    </div>
                     {feed.adConfig?.enabled && (
                       <div className="text-yellow-500 text-xs mt-1">
                         Ads at positions: {feed.adConfig.positions?.join(", ")}
@@ -102,18 +116,22 @@ export default function FeedsPage() {
                     >
                       Copy URL
                     </button>
-                    <button
-                      onClick={() => router.push(`/dashboard/feeds/edit/${feed._id}`)}
-                      className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(feed._id)}
-                      className="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
-                    >
-                      Delete
-                    </button>
+                    {feed.userId?._id === user?.id && (
+                      <>
+                        <button
+                          onClick={() => router.push(`/dashboard/feeds/edit/${feed._id}`)}
+                          className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(feed._id)}
+                          className="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

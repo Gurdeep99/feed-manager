@@ -19,7 +19,7 @@ export async function POST(req) {
   if (!userId) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const config = await DatabaseConfig.create({ ...body, userId });
+  const config = await DatabaseConfig.create({ ...body, userId, label: body.label || "" });
   return Response.json(config);
 }
 
@@ -28,7 +28,9 @@ export async function GET(req) {
   const userId = getUserId(req);
   if (!userId) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
-  const list = await DatabaseConfig.find({ userId }).sort({ createdAt: -1 });
+  const list = await DatabaseConfig.find({})
+    .populate("userId", "name email")
+    .sort({ createdAt: -1 });
   return Response.json(list);
 }
 

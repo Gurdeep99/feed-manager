@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const FeedSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    label: { type: String, default: "" },
     name: { type: String, required: true },
     property: { type: String, required: true },
     route: { type: String, required: true },
@@ -61,7 +62,7 @@ const FeedSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Compound unique index
-FeedSchema.index({ userId: 1, property: 1, route: 1 }, { unique: true });
+// Compound unique index (data is now shared across users)
+FeedSchema.index({ property: 1, route: 1 }, { unique: true });
 
 export default mongoose.models.Feed || mongoose.model("Feed", FeedSchema);

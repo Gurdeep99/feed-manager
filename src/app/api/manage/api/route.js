@@ -19,7 +19,9 @@ export async function GET(req) {
   const userId = getUserId(req);
   if (!userId) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
-  const apis = await Api.find({ userId }).sort({ createdAt: -1 });
+  const apis = await Api.find({})
+    .populate("userId", "name email")
+    .sort({ createdAt: -1 });
   return Response.json(apis);
 }
 
@@ -42,6 +44,7 @@ export async function POST(req) {
   const api = await Api.create({
     ...body,
     userId,
+    label: body.label || "",
     staticS3Key: s3Key,
   });
 

@@ -3,14 +3,17 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { apiFetch } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ProvidersPage() {
+  const { user } = useAuth();
   const [providers, setProviders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({
     name: "",
+    label: "",
     method: "GET",
     url: "",
     headers: "{}",
@@ -37,7 +40,7 @@ export default function ProvidersPage() {
   };
 
   const resetForm = () => {
-    setForm({ name: "", method: "GET", url: "", headers: "{}", params: "{}", body: "{}" });
+    setForm({ name: "", label: "", method: "GET", url: "", headers: "{}", params: "{}", body: "{}" });
     setEditingId(null);
     setShowForm(false);
     setError("");
@@ -75,6 +78,7 @@ export default function ProvidersPage() {
   const handleEdit = (provider) => {
     setForm({
       name: provider.name,
+      label: provider.label || "",
       method: provider.method,
       url: provider.url,
       headers: JSON.stringify(provider.headers || {}, null, 2),
@@ -151,15 +155,27 @@ export default function ProvidersPage() {
               )}
 
               <div className="space-y-4">
-                <div>
-                  <label className="block text-gray-300 mb-1 text-sm">Name</label>
-                  <input
-                    type="text"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
-                    placeholder="My API Provider"
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-300 mb-1 text-sm">Name</label>
+                    <input
+                      type="text"
+                      value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      placeholder="My API Provider"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-300 mb-1 text-sm">Label (optional)</label>
+                    <input
+                      type="text"
+                      value={form.label}
+                      onChange={(e) => setForm({ ...form, label: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      placeholder="My Provider, Test"
+                    />
+                  </div>
                 </div>
 
                 <div className="flex gap-2">
@@ -262,7 +278,14 @@ export default function ProvidersPage() {
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <h3 className="text-white font-medium">{provider.name}</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-white font-medium">{provider.name}</h3>
+                      {provider.label && (
+                        <span className="text-xs px-2 py-0.5 rounded bg-cyan-600 text-white">
+                          {provider.label}
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-center gap-2 mt-1">
                       <span
                         className={`text-xs px-2 py-0.5 rounded ${
@@ -277,6 +300,9 @@ export default function ProvidersPage() {
                         {provider.url}
                       </span>
                     </div>
+                    <div className="text-gray-500 text-xs mt-1">
+                      By: {provider.userId?.name || "Unknown"}
+                    </div>
                   </div>
                   <div className="flex gap-2">
                     <button
@@ -290,18 +316,22 @@ export default function ProvidersPage() {
                     >
                       {testingId === provider._id ? "Testing..." : "Test"}
                     </button>
-                    <button
-                      onClick={() => handleEdit(provider)}
-                      className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(provider._id)}
-                      className="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
-                    >
-                      Delete
-                    </button>
+                    {provider.userId?._id === user?.id && (
+                      <>
+                        <button
+                          onClick={() => handleEdit(provider)}
+                          className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(provider._id)}
+                          className="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
 

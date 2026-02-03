@@ -3,14 +3,17 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { apiFetch } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 export default function DatabasesPage() {
+  const { user } = useAuth();
   const [databases, setDatabases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({
     name: "",
+    label: "",
     type: "MONGODB",
     uri: "",
     database: "",
@@ -33,7 +36,7 @@ export default function DatabasesPage() {
   };
 
   const resetForm = () => {
-    setForm({ name: "", type: "MONGODB", uri: "", database: "" });
+    setForm({ name: "", label: "", type: "MONGODB", uri: "", database: "" });
     setEditingId(null);
     setShowForm(false);
     setError("");
@@ -64,6 +67,7 @@ export default function DatabasesPage() {
   const handleEdit = (db) => {
     setForm({
       name: db.name,
+      label: db.label || "",
       type: db.type,
       uri: db.uri,
       database: db.database || "",
@@ -110,15 +114,27 @@ export default function DatabasesPage() {
               )}
 
               <div className="space-y-4">
-                <div>
-                  <label className="block text-gray-300 mb-1 text-sm">Connection Name</label>
-                  <input
-                    type="text"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
-                    placeholder="Production MongoDB"
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-300 mb-1 text-sm">Connection Name</label>
+                    <input
+                      type="text"
+                      value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      placeholder="Production MongoDB"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-300 mb-1 text-sm">Label (optional)</label>
+                    <input
+                      type="text"
+                      value={form.label}
+                      onChange={(e) => setForm({ ...form, label: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                      placeholder="My DB, Test"
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -200,7 +216,14 @@ export default function DatabasesPage() {
               >
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-white font-medium">{db.name}</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-white font-medium">{db.name}</h3>
+                      {db.label && (
+                        <span className="text-xs px-2 py-0.5 rounded bg-cyan-600 text-white">
+                          {db.label}
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-center gap-2 mt-1">
                       <span
                         className={`text-xs px-2 py-0.5 rounded ${
@@ -220,20 +243,27 @@ export default function DatabasesPage() {
                     <p className="text-gray-500 text-sm font-mono mt-1 truncate max-w-md">
                       {db.uri.replace(/\/\/[^:]+:[^@]+@/, "//***:***@")}
                     </p>
+                    <p className="text-gray-500 text-xs mt-1">
+                      By: {db.userId?.name || "Unknown"}
+                    </p>
                   </div>
                   <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEdit(db)}
-                      className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(db._id)}
-                      className="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
-                    >
-                      Delete
-                    </button>
+                    {db.userId?._id === user?.id && (
+                      <>
+                        <button
+                          onClick={() => handleEdit(db)}
+                          className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(db._id)}
+                          className="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

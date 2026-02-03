@@ -53,6 +53,7 @@ export default function CreateApi() {
 
   // Step 2: Route
   const [route, setRoute] = useState("");
+  const [label, setLabel] = useState("");
 
   // Step 3: API Type
   const [apiType, setApiType] = useState("");
@@ -202,6 +203,7 @@ export default function CreateApi() {
       const payload = {
         property: showNewProperty ? newProperty : property,
         route,
+        label,
         apiType,
         method,
         rotation: parseInt(rotation) || 1,
@@ -328,6 +330,17 @@ export default function CreateApi() {
         className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
         autoFocus
       />
+
+      <div>
+        <label className="block text-gray-300 mb-2">Label (optional - helps identify your API)</label>
+        <input
+          type="text"
+          placeholder="e.g., My Video API, Test Config"
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
+        />
+      </div>
 
       <div className="flex gap-2">
         <button onClick={() => setStep(1)} className="px-4 py-2 text-gray-400 hover:text-white">
@@ -938,6 +951,7 @@ export default function CreateApi() {
             setStep(1);
             setProperty("");
             setRoute("");
+            setLabel("");
             setApiType("");
             setStaticJson("{\n  \n}");
             setDynamicType("");

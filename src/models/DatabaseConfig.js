@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 
 const DatabaseConfigSchema = new mongoose.Schema({
-  userId: mongoose.Schema.Types.ObjectId,
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  label: { type: String, default: "" },
 
   type: String, // MONGODB or MYSQL
 

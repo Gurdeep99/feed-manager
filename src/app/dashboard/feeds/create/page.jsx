@@ -32,6 +32,7 @@ export default function CreateFeedPage() {
 
   // Basic info
   const [name, setName] = useState("");
+  const [label, setLabel] = useState("");
   const [property, setProperty] = useState("");
   const [newProperty, setNewProperty] = useState("");
   const [route, setRoute] = useState("");
@@ -189,6 +190,7 @@ export default function CreateFeedPage() {
 
       const payload = {
         name,
+        label,
         property: newProperty || property,
         route,
         providerId: providerId || null,
@@ -240,15 +242,27 @@ export default function CreateFeedPage() {
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-4 space-y-4">
           <h2 className="text-lg font-semibold text-white">Basic Info</h2>
 
-          <div>
-            <label className="block text-gray-300 mb-1 text-sm">Feed Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
-              placeholder="Video Shorts Feed"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-gray-300 mb-1 text-sm">Feed Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                placeholder="Video Shorts Feed"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-300 mb-1 text-sm">Label (optional)</label>
+              <input
+                type="text"
+                value={label}
+                onChange={(e) => setLabel(e.target.value)}
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                placeholder="My Feed, Test Config"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

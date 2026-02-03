@@ -18,6 +18,7 @@ export async function GET(req) {
   const userId = getUserId(req);
   if (!userId) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
-  const properties = await Api.distinct("property", { userId });
+  // Show all properties from all users
+  const properties = await Api.distinct("property", {});
   return Response.json(properties);
 }

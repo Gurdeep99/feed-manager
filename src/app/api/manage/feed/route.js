@@ -13,7 +13,7 @@ function getUserId(req) {
   }
 }
 
-// GET - List all feeds
+// GET - List all feeds (visible to all users)
 export async function GET(req) {
   try {
     const userId = getUserId(req);
@@ -22,7 +22,8 @@ export async function GET(req) {
     }
 
     await connectDB();
-    const feeds = await Feed.find({ userId })
+    const feeds = await Feed.find({})
+      .populate("userId", "name email")
       .populate("providerId", "name method url")
       .sort({ createdAt: -1 });
 
@@ -46,6 +47,7 @@ export async function POST(req) {
 
     const feed = await Feed.create({
       userId,
+      label: body.label || "",
       name: body.name,
       property: body.property,
       route: body.route,
